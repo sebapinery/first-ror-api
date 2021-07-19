@@ -1,5 +1,5 @@
 class Api::V1::UsersController < ApplicationController
-  before_action :getUser, only: [:update_user, :delete_user, :show_user_by_id]
+  before_action :get_user, only: [:update_user, :delete_user, :show_user_by_id]
 
   def show_user_by_id
     if @user
@@ -24,7 +24,7 @@ class Api::V1::UsersController < ApplicationController
     if user.save
       render json: user, status: :ok
     else
-      render json: { msg: 'User not added' }, status: :unprocessable_entity
+      render json: { msg: 'User not added', error: user.errors }, status: :unprocessable_entity
     end
   end
 
@@ -33,7 +33,7 @@ class Api::V1::UsersController < ApplicationController
       if @user.update(userparams)
         render json: @user, status: :ok
       else
-        render json: { msg: 'Update failed' }, status: :unprocessable_entity
+        render json: { msg: 'Update failed', error: @user.errors }, status: :unprocessable_entity
       end
     else
       render json: { json: 'User not found' }, status: :not_found
@@ -58,7 +58,7 @@ class Api::V1::UsersController < ApplicationController
     params.permit(:username, :email, :password_digest)
   end
 
-  def getUser
+  def get_user
     @user = User.find(params[:id])
   end
 end
